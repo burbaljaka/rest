@@ -21,14 +21,14 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['currency', 'balance', 'username']
 
     def __str__(self):
-        return self.email
+        return self.username
 
 
 class Transaction(models.Model):
     sender = models.ForeignKey(User, verbose_name='Sender', on_delete=models.CASCADE, related_name='sender')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     receiver = models.EmailField(verbose_name='Receiver', default=None)
-    currency = models.CharField(verbose_name='Currency', max_length=3)
+    currency = models.CharField(verbose_name='Currency', max_length=3, blank=True)
     date = models.DateTimeField(verbose_name='Date', auto_now_add=True)
 
     def __str__(self):

@@ -21,4 +21,5 @@ urlpatterns = [
     path('api/v1/banking/', include('banking.urls', namespace='banking')),
     path('api/v1/rest-auth/', include('rest_framework.urls')),
     path('api/v1/auth/', include('djoser.urls')),
+    path('api/v1/auth-token/', include('djoser.urls.authtoken'))
 ]

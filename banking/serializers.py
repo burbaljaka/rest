@@ -1,13 +1,14 @@
 from rest_framework import serializers
 from .models import Transaction, User
+from django.utils import timezone
 
 
 
 class TransactionSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
+    sender = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
     class Meta:
         model = Transaction
-        fields = ('amount', 'receiver', 'currency', 'date', 'user')
+        fields = ('amount', 'receiver', 'currency', 'date', 'sender')
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -17,3 +18,8 @@ class ClientSerializer(serializers.ModelSerializer):
         fields = ('email', 'username', 'currency')
 
 
+class TransactionCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Transaction
+        fields = ('amount', 'receiver')
