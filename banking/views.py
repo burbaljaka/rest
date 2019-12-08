@@ -4,6 +4,7 @@ from .serializers import TransactionSerializer, ClientSerializer, TransactionCre
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.utils import timezone
+import requests
 
 
 class TransactionView(generics.ListAPIView):
@@ -26,7 +27,6 @@ class TransferView(generics.CreateAPIView):
             "request": self.request,
         }
         serializer = TransactionSerializer(data=request.data, context=context)
-        print(serializer.initial_data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         sender = request.user.id
@@ -44,8 +44,15 @@ class TransferView(generics.CreateAPIView):
                 transaction = Transaction(amount=amount, currency=currency, sender=provider,
                                       date=timezone.now(), receiver=getter[0].email)
                 transaction.save()
-                provider.balance -= amount
-                getter[0].balance += amount
+                if provider.currency == getter[0].currency:
+                    provider.balance -= round(amount, 2)
+                    getter[0].balance += round(amount, 2)
+                else:
+                    url = 'https://api.exchangeratesapi.io/latest'
+                    context = {'base':getter[0].currency}
+                    rates = requests.get(url, context)
+                    provider.balance -= round(amount, 2)
+                    getter[0].balance += round(amount * rates.json()['rates'][provider.currency], 2)
                 provider.save()
                 getter[0].save()
 
